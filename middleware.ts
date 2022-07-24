@@ -4,11 +4,11 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   console.log(request.nextUrl.pathname)
   
+  // Solution: https://stackoverflow.com/a/73096326/6475432
   if (request.nextUrl.pathname === '/') {
-    if (Math.random() > 0.5) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    } else {
-      return NextResponse.redirect(new URL('/profile', request.url))
-    }
+    const redirectUrl = Math.random() > 0.5 ? '/dashboard' : '/profile'
+    const response = NextResponse.redirect(new URL(redirectUrl, request.url))
+    response.headers.set('x-middleware-cache', 'no-cache') // Disables middleware caching
+    return response
   }
 }
